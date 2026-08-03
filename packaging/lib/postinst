@@ -20,10 +20,23 @@ mount -o remount,rw / 2>/dev/null
 # contents ALSO land under /media/cryptofs/apps (everything ipkg touches is relative to the
 # offline root), so $OV must be searched for at BOTH the direct-install location and the
 # offline-root-prefixed one. A plain `ipkg install` (no -o) only ever populates the first.
+case "$0" in
+  */pmPostInstall.script) PKGID="$(basename "$(dirname "$0")")" ;;
+  *.postinst) PKGID="$(basename "$0" .postinst)" ;;
+  *) PKGID="" ;;
+esac
+
 OV=""
-for d in /media/cryptofs/app-services-overwrite/*/ /media/cryptofs/apps/media/cryptofs/app-services-overwrite/*/; do
-  [ -f "${d}dest.txt" ] && OV="${d%/}" && break
-done
+if [ -n "$PKGID" ]; then
+  for base in /media/cryptofs/app-services-overwrite /media/cryptofs/apps/media/cryptofs/app-services-overwrite; do
+    [ -f "$base/$PKGID/dest.txt" ] && OV="$base/$PKGID" && break
+  done
+fi
+if [ -z "$OV" ]; then
+  for d in /media/cryptofs/app-services-overwrite/*/ /media/cryptofs/apps/media/cryptofs/app-services-overwrite/*/; do
+    [ -f "${d}dest.txt" ] && OV="${d%/}" && break
+  done
+fi
 [ -n "$OV" ] || { echo "!! no app-services-overwrite/*/dest.txt found (checked direct + offline-root paths), nothing to install" >&2; exit 1; }
 
 DST="$(cat "$OV/dest.txt")"

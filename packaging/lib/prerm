@@ -11,8 +11,11 @@ log() { echo "[app-services] $*"; }
 mount -o remount,rw /dev/mapper/store-root / 2>/dev/null
 mount -o remount,rw / 2>/dev/null
 
+# See postinst's matching comment: pmPreRemove.script (this file, via make-ipk.sh) is what
+# Preware/WebOS Quick Install actually run, and under their offline-root ipkg invocation, staged
+# content can land at either the direct path or the /media/cryptofs/apps-prefixed one.
 OV=""
-for d in /media/cryptofs/app-services-overwrite/*/; do
+for d in /media/cryptofs/app-services-overwrite/*/ /media/cryptofs/apps/media/cryptofs/app-services-overwrite/*/; do
   [ -f "${d}dest.txt" ] && OV="${d%/}" && break
 done
 

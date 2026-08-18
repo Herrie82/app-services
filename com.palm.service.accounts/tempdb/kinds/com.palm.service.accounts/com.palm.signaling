@@ -1,5 +1,6 @@
 {
 	"id": "com.palm.signaling:1",
+	"owner": "com.palm.service.accounts",
 	"sync": false,
 	"indexes": [
 		{

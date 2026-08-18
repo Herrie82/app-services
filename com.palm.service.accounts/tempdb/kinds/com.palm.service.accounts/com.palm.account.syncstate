@@ -1,5 +1,6 @@
 {
 	"id": "com.palm.account.syncstate:1",
+	"owner": "com.palm.service.accounts",
 	"sync": false,
 	"indexes": [
 		{
